@@ -1,0 +1,6 @@
+@import "tailwindcss";
+
+@font-face {
+    font-family: mainFont;
+    src: url("../assets/BeVietnamPro-Regular.otf");
+}
