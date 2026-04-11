@@ -10,7 +10,7 @@ export default defineConfig({
       "/api": {
         target: "http://localhost:5000",
         changeOrigin: true,
-        secure: false,
+        // secure: false, //iska matlab ye hai ki http ko bhi yaha par allow kiya jayega
       },
     },
   },

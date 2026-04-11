@@ -4,6 +4,7 @@ import {
   RiMailLine,
   RiLockPasswordLine,
   RiPhoneLine,
+  RiGoogleFill,
 } from "@remixicon/react";
 import InputField from "../../../components/ui/InputField";
 import CheckboxField from "../../../components/ui/CheckboxField";
@@ -55,7 +56,7 @@ const RegisterForm = () => {
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-2">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-1">
         <InputField
           label="Full Name"
           id="fullname"
@@ -103,7 +104,7 @@ const RegisterForm = () => {
           required
         />
 
-        <div className="mt-4">
+        <div>
           <CheckboxField
             id="isSeller"
             name="isSeller"
@@ -114,13 +115,29 @@ const RegisterForm = () => {
           />
         </div>
 
-        <div className="mt-6">
+        <div>
           <Button type="submit" fullWidth>
             Sign Up Now
           </Button>
         </div>
 
-        <p className="mt-6 text-center text-sm font-medium text-brand-secondary/80">
+        <div className="mt-2 flex items-center justify-between">
+          <span className="w-1/4 border-b border-brand-secondary/30"></span>
+          <span className="text-xs text-center text-brand-secondary/80 font-bold uppercase tracking-widest">or</span>
+          <span className="w-1/4 border-b border-brand-secondary/30"></span>
+        </div>
+
+        <div className="mt-2">
+          <a
+            href="/api/auth/google"
+            className="w-full inline-flex justify-center items-center gap-2 px-6 py-3 border-2 border-brand-primary text-brand-primary hover:bg-brand-primary hover:text-white text-sm font-bold uppercase transition-all duration-300 focus:outline-none active:scale-[0.98]"
+          >
+            <RiGoogleFill className="w-5 h-5" />
+            Continue with Google
+          </a>
+        </div>
+
+        <p className=" mt-2 text-center text-sm font-medium text-brand-secondary/80">
           Already have an account?{" "}
           <Link
             to="/login"
