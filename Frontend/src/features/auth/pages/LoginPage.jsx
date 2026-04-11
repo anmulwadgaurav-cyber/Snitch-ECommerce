@@ -1,13 +1,13 @@
 import React from "react";
-import RegisterForm from "../components/RegisterForm";
-import modelImage from "../../../assets/snitch-model.png";
+import LoginForm from "../components/LoginForm";
+import modelImage from "../../../assets/snitch-model-2.png";
 
-const RegisterPage = () => {
+const LoginPage = () => {
   return (
     <div className="h-screen relative flex items-center justify-start overflow-hidden bg-brand-bg px-4 sm:px-12 lg:px-24">
       {/* Full Bleed Image Background */}
       <div
-        className="absolute h-full top-1/2 -translate-y-1/2 inset-0 bg-cover bg-center lg:bg-position-[center_right_-10rem] bg-no-repeat opacity-90 transition-all duration-1000"
+        className="absolute h-full top-1/2 -translate-y-1/2 inset-0 bg-cover bg-center lg:bg-position-[80%_center] bg-no-repeat opacity-90 transition-all duration-1000"
         style={{ backgroundImage: `url(${modelImage})` }}
       />
 
@@ -24,10 +24,10 @@ const RegisterPage = () => {
 
       {/* Left Aligned Floating Form */}
       <div className="relative z-10 w-full max-w-lg py-12 mx-auto lg:mx-0">
-        <RegisterForm />
+        <LoginForm />
       </div>
     </div>
   );
 };
 
-export default RegisterPage;
+export default LoginPage;

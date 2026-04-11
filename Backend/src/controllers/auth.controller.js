@@ -57,3 +57,24 @@ export const registerController = async (req, res) => {
     return res.status(500).json({ message: "Server error", success: false });
   }
 };
+
+export const loginController = async (req, res) => {
+  const { email, password } = req.body;
+
+  const user = await userModel.findOne({ email });
+
+  if (!user) {
+    return res.status(404).json({ message: "User not found", success: false });
+  }
+
+  const passwordMatch = await user.comparePassword(password);
+
+  if (!passwordMatch) {
+    return res
+      .status(400)
+      .json({ message: "Invalid email or password", success: false });
+  }
+
+  await sendTokenResponse(user, res, `Welcome back, ${user.fullname}!`);
+};
+

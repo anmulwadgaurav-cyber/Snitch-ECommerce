@@ -8,8 +8,13 @@ import {
 import InputField from "../../../components/ui/InputField";
 import CheckboxField from "../../../components/ui/CheckboxField";
 import Button from "../../../components/ui/Button";
+import { useAuth } from "../hook/useAuth.js";
+import { useNavigate, Link } from "react-router";
 
 const RegisterForm = () => {
+  const { handleRegister } = useAuth();
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     fullname: "",
     email: "",
@@ -26,19 +31,26 @@ const RegisterForm = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     console.log("Registration Data:", formData);
-    // Handle registration logic here
+    await handleRegister({
+      email: formData.email,
+      fullname: formData.fullname,
+      contact: formData.contactNumber,
+      password: formData.password,
+      isSeller: formData.isSeller,
+    });
+    navigate("/");
   };
 
   return (
-    <div className="w-full max-w-md bg-white p-10 shadow-xl shadow-brand-secondary/10 border border-brand-secondary/10">
-      <div className="mb-10 text-left">
-        <h2 className="text-3xl font-bold text-brand-primary tracking-tight mb-2">
+    <div className="w-full max-w-lg bg-white/40 sm:bg-white/30 backdrop-blur-2xl p-8 sm:p-8 shadow-2xl shadow-brand-primary/10 border border-white/50 mx-auto">
+      <div className="mb-8 text-left">
+        <h2 className="text-3xl font-extrabold text-brand-primary tracking-tight mb-2 uppercase">
           Create Account
         </h2>
-        <p className="text-sm text-brand-secondary">
+        <p className="text-sm font-medium text-brand-secondary/80">
           Join the ultimate shopping platform for clothes
         </p>
       </div>
@@ -107,6 +119,16 @@ const RegisterForm = () => {
             Sign Up Now
           </Button>
         </div>
+
+        <p className="mt-6 text-center text-sm font-medium text-brand-secondary/80">
+          Already have an account?{" "}
+          <Link
+            to="/login"
+            className="text-brand-primary font-bold hover:underline underline-offset-4 transition-all"
+          >
+            Sign In
+          </Link>
+        </p>
       </form>
     </div>
   );
