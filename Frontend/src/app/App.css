@@ -4,3 +4,21 @@
     font-family: mainFont;
     src: url("../assets/BeVietnamPro-Regular.otf");
 }
+
+@theme {
+  --color-brand-primary: #2B2D42;
+  --color-brand-secondary: #8D99AE;
+  --color-brand-bg: #EDF2F4;
+  --color-brand-accent1: #EF233C;
+  --color-brand-accent2: #D90429;
+  
+  --font-main: "mainFont", sans-serif;
+}
+
+@layer base {
+  body {
+    font-family: var(--font-main);
+    background-color: var(--color-brand-bg);
+    color: var(--color-brand-primary);
+  }
+}
