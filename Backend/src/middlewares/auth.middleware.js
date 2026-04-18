@@ -1,0 +1,27 @@
+import jwt from "jsonwebtoken";
+import { config } from "../config/config.js";
+import userModel from "../models/user.model.js";
+
+export const authenticateSeller = async (req, res, next) => {
+  const token = req.cookies.token;
+
+  if (!token) {
+    res.status(401).json({ message: "Unauthorized", succes: false });
+  }
+
+  try {
+    const decoded = jwt.verify(token, config.JWT_SECRET);
+    const user = await userModel.findById(decoded.id);
+    if (!user) {
+      return res.status(401).json({ message: "Unauthorized", success: false });
+    }
+    if (user.role !== "seller") {
+      return res.status(403).json({ message: "forbidden", success: false });
+    }
+    req.user = user; // Attach the user object to the request, matlab ki aage chal ke hum is user object ko use kar sakte hai
+    next();
+  } catch (error) {
+    console.log(error);
+    res.status(401).json({ message: "Unauthorized", success: false });
+  }
+};
