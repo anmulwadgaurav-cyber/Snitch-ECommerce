@@ -2,6 +2,8 @@ import express from "express";
 import { authenticateSeller } from "../middlewares/auth.middleware.js";
 import {
   createProduct,
+  getAllProducts,
+  getProductById,
   getSellerProducts,
 } from "../controllers/product.controller.js";
 import multer from "multer";
@@ -36,5 +38,19 @@ productRouter.post(
 @access private (Seller only) 
 */
 productRouter.get("/seller", authenticateSeller, getSellerProducts);
+
+/*
+@route GET /api/products/detail/:productId
+@desc Get product by id
+@access Public
+*/
+productRouter.get("/detail/:productId", getProductById);
+
+/*
+@route GET /api/products/
+@desc Get all products with pagination and filtering
+@access Public
+*/
+productRouter.get("/", getAllProducts);
 
 export default productRouter;

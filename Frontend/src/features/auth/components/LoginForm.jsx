@@ -24,11 +24,15 @@ const LoginForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await handleLogin({
+    const user = await handleLogin({
       email: formData.email,
       password: formData.password,
     });
-    navigate("/");
+    if (user == "buyer") {
+      navigate("/");
+    } else if (user == "seller") {
+      navigate("/seller/dashboard");
+    }
   };
 
   return (

@@ -4,11 +4,14 @@ import LoginPage from "../features/auth/pages/LoginPage";
 import CreateProduct from "../features/products/pages/createProduct";
 import GetProducts from "../features/products/pages/GetProducts";
 import ProductDetailed from "../features/products/components/ProductDetailed";
+import Protected from "../features/auth/components/Protected";
+import Home from "../features/products/pages/Home";
+import DetailedPage from "../features/products/pages/DetailedPage";
 
 export const routes = createBrowserRouter([
   {
     path: "/",
-    element: <h1>hello world</h1>,
+    element: <Home />,
   },
   {
     path: "/register",
@@ -19,19 +22,35 @@ export const routes = createBrowserRouter([
     element: <LoginPage />,
   },
   {
+    path: "/product/:productId",
+    element: <DetailedPage />,
+  },
+  {
     path: "/seller",
     children: [
       {
         path: "/seller/dashboard",
-        element: <GetProducts />,
+        element: (
+          <Protected role="seller">
+            <GetProducts />
+          </Protected>
+        ),
       },
       {
         path: "/seller/create-product",
-        element: <CreateProduct />,
+        element: (
+          <Protected role="seller">
+            <CreateProduct />
+          </Protected>
+        ),
       },
       {
         path: "/seller/product/:id",
-        element: <ProductDetailed />,
+        element: (
+          <Protected role="seller">
+            <ProductDetailed />
+          </Protected>
+        ),
       },
     ],
   },

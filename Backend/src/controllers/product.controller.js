@@ -41,3 +41,39 @@ export async function getSellerProducts(req, res) {
     products,
   });
 }
+
+export async function getProductById(req, res) {
+  const { productId } = req.params;
+
+  try {
+    const product = await productModel.findById(productId);
+
+    if (!product) {
+      return res.status(404).json({
+        message: "Product not found",
+        success: false,
+      });
+    }
+
+    res.status(200).json({
+      message: "Product fetched successfully",
+      success: true,
+      product,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Error fetching product",
+      success: false,
+    });
+  }
+}
+
+export async function getAllProducts(req, res) {
+  const products = await productModel.find();
+
+  return res.status(200).json({
+    message: "All products fetched successfully",
+    success: true,
+    products,
+  });
+}
