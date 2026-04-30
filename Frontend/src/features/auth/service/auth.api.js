@@ -12,12 +12,17 @@ export async function register({
   fullname,
   isSeller,
 }) {
-  const response = await authAPIInstance("/register", {
+  const response = await authAPIInstance.post("/register", {
     email,
     password,
     contact,
     fullname,
     isSeller,
   });
+  return response.data;
+}
+
+export async function login({ email, password }) {
+  const response = await authAPIInstance.post("/login", { email, password });
   return response.data;
 }
