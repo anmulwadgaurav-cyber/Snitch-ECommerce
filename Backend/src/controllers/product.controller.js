@@ -68,6 +68,36 @@ export async function getProductById(req, res) {
   }
 }
 
+export async function getSellerProductById(req, res) {
+  const { productId } = req.params;
+  const seller = req.user;
+
+  try {
+    const product = await productModel.findOne({
+      _id: productId,
+      seller: seller._id,
+    });
+
+    if (!product) {
+      return res.status(404).json({
+        message: "Product not found",
+        success: false,
+      });
+    }
+
+    res.status(200).json({
+      message: "Product fetched successfully",
+      success: true,
+      product,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Error fetching product",
+      success: false,
+    });
+  }
+}
+
 export async function getAllProducts(req, res) {
   const products = await productModel.find();
 

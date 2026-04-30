@@ -4,6 +4,7 @@ import {
   createProduct,
   getAllProducts,
   getProductById,
+  getSellerProductById,
   getSellerProducts,
 } from "../controllers/product.controller.js";
 import multer from "multer";
@@ -52,5 +53,16 @@ productRouter.get("/detail/:productId", getProductById);
 @access Public
 */
 productRouter.get("/", getAllProducts);
+
+/*
+@route  GET /api/seller/products/:productId
+@desc   Get a single product by ID for the authenticated seller
+@access Private (Seller only)
+*/
+productRouter.get(
+  "/seller/detail/:productId",
+  authenticateSeller,
+  getSellerProductById,
+);
 
 export default productRouter;
