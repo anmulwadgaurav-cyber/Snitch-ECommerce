@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 
 const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
-  contact: { type: String, required: false, unique: true },
+  contact: { type: String, trim: true, default: undefined },
   password: {
     type: String,
     required: function () {
@@ -20,6 +20,16 @@ const userSchema = new mongoose.Schema({
     type: String,
   },
 });
+
+userSchema.index(
+  { contact: 1 },
+  {
+    unique: true,
+    partialFilterExpression: {
+      contact: { $exists: true, $ne: "" },
+    },
+  },
+);
 
 userSchema.pre("save", async function () {
   if (!this.isModified("password")) return;

@@ -26,6 +26,8 @@ export const config = {
 
   GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
   GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
+  // Full callback URL that must match the Authorized redirect URI in Google Cloud Console
+  GOOGLE_CALLBACK_URL: process.env.GOOGLE_CALLBACK_URL,
 
   NODE_ENV: process.env.NODE_ENV || "development",
 

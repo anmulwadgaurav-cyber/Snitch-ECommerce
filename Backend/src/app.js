@@ -19,6 +19,9 @@ const app = express();
 
 app.use(passport.initialize());
 
+// trust proxy when behind a reverse proxy (useful when deployed)
+app.set("trust proxy", true);
+
 passport.use(
   new GoogleStrategy(
     {
