@@ -134,15 +134,89 @@ const ProductDetail = () => {
 
   if (!product) {
     return (
-      <div
-        className="min-h-screen bg-[#F5EDE3] flex items-center justify-center"
-        style={FONT}
-      >
+      <>
         <FontLink />
-        <div className="text-[12px] tracking-[0.2em] uppercase font-medium text-[#B89A82] animate-pulse">
-          Loading Details...
+        <div
+          className="min-h-screen bg-[#F5EDE3] flex flex-col font-['Be_Vietnam_Pro'] selection:bg-[#D4BFB0] selection:text-black"
+          style={FONT}
+        >
+          <Navbar />
+          <main className="flex-1 max-w-[1400px] w-full mx-auto px-6 md:px-12 py-8 md:py-16 animate-pulse">
+            {/* Breadcrumbs Skeleton */}
+            <div className="mb-10 flex items-center gap-3">
+              <div className="h-3 w-12 bg-[#D4BFB0]/40 rounded-sm"></div>
+              <span className="text-[#D4BFB0]/40">/</span>
+              <div className="h-3 w-20 bg-[#D4BFB0]/40 rounded-sm"></div>
+              <span className="text-[#D4BFB0]/40">/</span>
+              <div className="h-3 w-32 bg-[#D4BFB0]/40 rounded-sm"></div>
+            </div>
+
+            <div className="flex flex-col lg:flex-row gap-12 xl:gap-20">
+              {/* Left: Image Gallery Skeleton */}
+              <div className="w-full lg:w-[55%] flex flex-col md:flex-row gap-4 h-auto lg:h-[80vh]">
+                {/* Thumbnails Skeleton */}
+                <div className="flex md:flex-col gap-4 overflow-hidden md:w-[100px] shrink-0 order-2 md:order-1">
+                  {[1, 2, 3].map((idx) => (
+                    <div
+                      key={idx}
+                      className="w-20 h-24 md:w-full md:h-[120px] shrink-0 bg-[#D4BFB0]/30"
+                    ></div>
+                  ))}
+                </div>
+                {/* Main Image Skeleton */}
+                <div className="flex-1 bg-[#D4BFB0]/30 order-1 md:order-2 h-[60vh] md:h-full"></div>
+              </div>
+
+              {/* Right: Product Info Skeleton */}
+              <div className="w-full lg:w-[45%] flex flex-col pt-4 lg:pt-10">
+                {/* Title */}
+                <div className="h-10 w-3/4 bg-[#D4BFB0]/40 mb-6"></div>
+                {/* Price */}
+                <div className="h-8 w-1/4 bg-[#D4BFB0]/40 mb-8"></div>
+                
+                {/* Divider */}
+                <div className="w-12 h-px bg-[#D4BFB0] mb-8"></div>
+
+                {/* Description */}
+                <div className="space-y-3 mb-12">
+                  <div className="h-4 w-full bg-[#D4BFB0]/30"></div>
+                  <div className="h-4 w-full bg-[#D4BFB0]/30"></div>
+                  <div className="h-4 w-5/6 bg-[#D4BFB0]/30"></div>
+                  <div className="h-4 w-4/6 bg-[#D4BFB0]/30"></div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex flex-col sm:flex-row gap-4 mt-auto">
+                  <div className="flex-1 h-14 bg-[#D4BFB0]/40"></div>
+                  <div className="flex-1 h-14 bg-[#D4BFB0]/60"></div>
+                </div>
+
+                {/* Accordions */}
+                <div className="mt-16 border-t border-[#D4BFB0]">
+                  <div className="py-6 border-b border-[#D4BFB0] flex justify-between items-center">
+                    <div className="h-3 w-32 bg-[#D4BFB0]/40"></div>
+                    <div className="h-4 w-4 bg-[#D4BFB0]/40"></div>
+                  </div>
+                  <div className="py-6 border-b border-[#D4BFB0] flex justify-between items-center">
+                    <div className="h-3 w-24 bg-[#D4BFB0]/40"></div>
+                    <div className="h-4 w-4 bg-[#D4BFB0]/40"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </main>
+          
+          <footer className="border-t border-[#D4BFB0] bg-[#FAF7F2] py-12 mt-12 animate-pulse">
+            <div className="max-w-[1600px] mx-auto px-6 md:px-12 flex flex-col md:flex-row justify-between items-center gap-6">
+              <div className="h-6 w-32 bg-[#D4BFB0]/40"></div>
+              <div className="flex gap-6">
+                <div className="h-3 w-16 bg-[#D4BFB0]/40"></div>
+                <div className="h-3 w-16 bg-[#D4BFB0]/40"></div>
+              </div>
+            </div>
+          </footer>
         </div>
-      </div>
+      </>
     );
   }
 
