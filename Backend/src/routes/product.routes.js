@@ -3,7 +3,7 @@ import { authenticateSeller } from "../middlewares/auth.middleware.js";
 import {
   createProduct,
   getAllProducts,
-  getProductById,
+  getProductDetailsById,
   getSellerProductById,
   getSellerProducts,
 } from "../controllers/product.controller.js";
@@ -45,7 +45,7 @@ productRouter.get("/seller", authenticateSeller, getSellerProducts);
 @desc Get product by id
 @access Public
 */
-productRouter.get("/detail/:productId", getProductById);
+productRouter.get("/details/:productId", getProductDetailsById);
 
 /*
 @route GET /api/products/

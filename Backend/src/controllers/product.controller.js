@@ -42,7 +42,7 @@ export async function getSellerProducts(req, res) {
   });
 }
 
-export async function getProductById(req, res) {
+export async function getProductDetailsById(req, res) {
   const { productId } = req.params;
 
   try {
