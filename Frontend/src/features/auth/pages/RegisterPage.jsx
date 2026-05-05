@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useAuth } from "../hook/useAuth";
 import { Link, useNavigate } from "react-router";
+import ContinueWithGoogle from "../components/ContinueWithGoogle";
 
 /*
   Design System: "Linen & Ink" (from Stitch)
@@ -44,25 +45,19 @@ const Field = ({ label, error, children }) => (
   <div className="flex flex-col gap-2">
     <label
       style={{ fontFamily: "'Be Vietnam Pro', sans-serif" }}
-      className="text-[10px] font-medium tracking-[0.2em] uppercase text-[#B89A82] select-none"
+      className={`text-[10px] font-medium tracking-[0.2em] uppercase select-none transition-colors duration-300 ${
+        error ? "text-red-500" : "text-[#B89A82]"
+      }`}
     >
-      {label}
+      {error ? error : label}
     </label>
     {children}
-    {error && (
-      <p
-        style={{ fontFamily: "'Be Vietnam Pro', sans-serif" }}
-        className="text-[11px] tracking-wide text-red-500 mt-0.5"
-      >
-        {error}
-      </p>
-    )}
   </div>
 );
 
 // ─── Shared underline input style ───────────────────────
 const inputCls =
-  "w-full bg-transparent border-b border-[#D4BFB0] pb-3 pt-1 text-sm " +
+  "w-full bg-transparent border-b border-[#D4BFB0] pb-2 pt-1 text-sm " +
   "text-black placeholder-[#B89A82]/50 outline-none " +
   "transition-colors duration-300 focus:border-black";
 
@@ -185,15 +180,15 @@ const RegisterPage = () => {
             }}
           />
           {/* Deep gradient overlay for text legibility */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/20 to-black/80" />
+          <div className="absolute inset-0 bg-linear-to-b from-black/60 via-black/20 to-black/80" />
 
           {/* Top brand mark */}
           <div className="relative z-10 p-12">
             <p className="text-[10px] tracking-[0.4em] uppercase text-white/50 mb-1">
-              Est. 2024
+              Est 2026
             </p>
             <h2 className="text-2xl font-extralight tracking-[0.4em] uppercase text-white">
-              Snitch
+              ORCERAL
             </h2>
           </div>
 
@@ -210,12 +205,12 @@ const RegisterPage = () => {
         </div>
 
         {/* ══ RIGHT — Registration form panel ══════════════════ */}
-        <div className="flex-1 bg-[#F5EDE3] flex items-center justify-center px-6 py-16 lg:px-0">
+        <div className="flex-1 bg-[#F5EDE3] flex items-center justify-center px-6 py-8 lg:px-0">
           <div className="w-full max-w-sm lg:max-w-md">
             {/* ── Header ── */}
-            <div className="mb-12">
+            <div className="mb-8">
               {/* Mobile-only brand name */}
-              <p className="lg:hidden text-[10px] tracking-[0.4em] uppercase text-[#B89A82] mb-6">
+              <p className="lg:hidden text-[10px] tracking-[0.4em] uppercase text-[#B89A82] mb-4">
                 Snitch
               </p>
               <p className="text-[10px] tracking-[0.3em] uppercase text-[#B89A82] mb-3">
@@ -235,7 +230,11 @@ const RegisterPage = () => {
             )}
 
             {/* ── Form ── */}
-            <form onSubmit={handleSubmit} noValidate className="space-y-8">
+            <form
+              onSubmit={handleSubmit}
+              noValidate
+              className="space-y-5 relative"
+            >
               {/* Full Name */}
               <Field label="Full Name" error={errors.fullname}>
                 <input
@@ -283,7 +282,7 @@ const RegisterPage = () => {
 
               {/* Password with show/hide toggle */}
               <Field label="Password" error={errors.password}>
-                <div className="relative">
+                <div className="relative mb-1">
                   <input
                     id="password"
                     type={showPw ? "text" : "password"}
@@ -307,7 +306,7 @@ const RegisterPage = () => {
 
               {/* Password strength indicator */}
               {form.password.length > 0 && (
-                <div className="flex gap-1 -mt-4">
+                <div className="flex gap-1 -mt-4 absolute w-full">
                   {[1, 2, 3, 4].map((i) => {
                     const strength = Math.min(
                       Math.floor(form.password.length / 3),
@@ -338,7 +337,7 @@ const RegisterPage = () => {
               {/* Register as Seller — custom sharp checkbox */}
               <label
                 htmlFor="isSeller"
-                className="flex items-center gap-4 cursor-pointer group select-none pt-1"
+                className="flex items-center gap-4 cursor-pointer group select-none pt-1 w-fit"
               >
                 <input
                   id="isSeller"
@@ -387,7 +386,7 @@ const RegisterPage = () => {
                 type="submit"
                 disabled={isLoading}
                 className={
-                  "w-full py-4 text-[11px] tracking-[0.35em] uppercase font-medium " +
+                  "w-full py-3.5 text-[11px] tracking-[0.35em] uppercase font-medium " +
                   "transition-all duration-300 " +
                   (isLoading
                     ? "bg-[#D4BFB0] text-white cursor-not-allowed"
@@ -425,7 +424,7 @@ const RegisterPage = () => {
             </form>
 
             {/* ── Or divider ── */}
-            <div className="flex items-center gap-4 mt-8">
+            <div className="flex items-center gap-4 mt-5">
               <div className="flex-1 h-px bg-[#D4BFB0]" />
               <span
                 className="text-[9px] tracking-[0.3em] uppercase text-[#B89A82] select-none"
@@ -437,52 +436,21 @@ const RegisterPage = () => {
             </div>
 
             {/* ── Continue with Google ── */}
-            <a
-              id="register-google"
-              href={"/api/auth/google"}
-              className="mt-4 w-full py-3.5 flex items-center justify-center gap-3 border border-[#D4BFB0] bg-transparent text-[11px] tracking-[0.25em] uppercase text-black hover:border-black hover:bg-white transition-all duration-300 active:scale-[0.99]"
-              style={{ fontFamily: "'Be Vietnam Pro', sans-serif" }}
-            >
-              {/* Google G logo */}
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 48 48"
-                aria-hidden="true"
-              >
-                <path
-                  fill="#4285F4"
-                  d="M44.5 20H24v8.5h11.8C34.1 33.1 29.6 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.8 1.1 7.9 2.9l6.4-6.4C34.5 5.9 29.5 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20c11 0 19.7-7.9 19.7-20 0-1.3-.1-2.7-.2-4z"
-                />
-                <path
-                  fill="#34A853"
-                  d="M6.3 14.7l7 5.1C15.1 16.1 19.2 13 24 13c3 0 5.8 1.1 7.9 2.9l6.4-6.4C34.5 5.9 29.5 4 24 4c-7.7 0-14.4 4.3-17.7 10.7z"
-                />
-                <path
-                  fill="#FBBC05"
-                  d="M24 44c5.4 0 10.3-1.8 14.1-4.9l-6.5-5.3C29.6 35.4 26.9 36 24 36c-5.6 0-10.1-2.9-11.8-7.5l-7 5.4C8.6 39.8 15.8 44 24 44z"
-                />
-                <path
-                  fill="#EA4335"
-                  d="M44.5 20H24v8.5h11.8c-.9 2.6-2.7 4.8-5 6.3l6.5 5.3C41.3 36.7 44.5 31 44.5 24c0-1.3-.1-2.7-.2-4z"
-                />
-              </svg>
-              Continue with Google
-            </a>
+            <ContinueWithGoogle />
 
             {/* ── Footer ── */}
-            <p className="mt-8 text-[10px] tracking-[0.2em] uppercase text-[#B89A82] text-center">
+            <p className="mt-5 text-[10px] tracking-[0.2em] uppercase text-[#B89A82] text-center">
               Already have an account?{" "}
-              <a
-                href="/login"
+              <Link
+                to="/login"
                 className="text-black underline underline-offset-4 decoration-[#D4BFB0] hover:decoration-black transition-all duration-200"
               >
                 Sign In
-              </a>
+              </Link>
             </p>
 
             {/* Fine-print policy */}
-            <p className="mt-6 text-center text-[10px] text-[#B89A82]/60 tracking-wide leading-relaxed">
+            <p className="mt-4 text-center text-[10px] text-[#B89A82]/60 tracking-wide leading-relaxed">
               By registering, you agree to our{" "}
               <a
                 href="/terms"

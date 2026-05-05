@@ -26,3 +26,8 @@ export async function login({ email, password }) {
   const response = await authAPIInstance.post("/login", { email, password });
   return response.data;
 }
+
+export async function getMe() {
+  const response = await authAPIInstance.get("/me");
+  return response.data;
+}

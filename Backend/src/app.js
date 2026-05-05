@@ -10,12 +10,12 @@ import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 
 const app = express();
 
-// app.use(
-//   cors({
-//     origin: "http://localhost:5173",
-//     credentials: true,
-//   }),
-// );
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  }),
+);
 
 app.use(passport.initialize());
 
@@ -43,6 +43,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 app.use("/api/auth", authRouter);
-app.use("/api/product", productRouter);
+app.use("/api/products", productRouter);
 
 export default app;

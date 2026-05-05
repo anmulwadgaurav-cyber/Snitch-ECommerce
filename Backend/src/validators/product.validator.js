@@ -1,15 +1,5 @@
-import { body, validationResult } from "express-validator";
-
-function validationRequest(req, res, next) {
-  const errors = validationResult(req);
-
-  if (!errors.isEmpty()) {
-    return res
-      .status(400)
-      .json({ message: "Validation errro", errors: errors.array() });
-  }
-  next();
-}
+import { body } from "express-validator";
+import validationRequest from "../config/validationRequest.js";
 
 export const createProductValidator = [
   body("title").notEmpty().withMessage("Title is required"),
