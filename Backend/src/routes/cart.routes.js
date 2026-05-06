@@ -1,7 +1,10 @@
 import express from "express";
 import { authenticateUser } from "../middlewares/auth.middleware.js";
 import { validateAddToCart } from "../validators/cart.validator.js";
-import { addToCartController } from "../controllers/cart.controller.js";
+import {
+  addToCartController,
+  getCartController,
+} from "../controllers/cart.controller.js";
 const cartRouter = express.Router();
 
 /*
@@ -13,6 +16,19 @@ const cartRouter = express.Router();
 @argument quantity - Quantitiy of the item to add (optional, defualt: 1) 
 */
 
-cartRouter.post("/", authenticateUser, validateAddToCart, addToCartController);
+cartRouter.post(
+  "/add/:productId/:variantId",
+  authenticateUser,
+  validateAddToCart,
+  addToCartController,
+);
+
+/*
+@route GET /api/cart
+@desc Get user's cart
+@access private
+*/
+
+cartRouter.get("/", authenticateUser, getCartController);
 
 export default cartRouter;
