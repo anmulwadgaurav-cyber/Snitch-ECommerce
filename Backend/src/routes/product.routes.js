@@ -1,6 +1,7 @@
 import express from "express";
 import { authenticateSeller } from "../middlewares/auth.middleware.js";
 import {
+  addProductVariant,
   createProduct,
   getAllProducts,
   getProductDetailsById,
@@ -53,6 +54,18 @@ productRouter.get("/details/:productId", getProductDetailsById);
 @access Public
 */
 productRouter.get("/", getAllProducts);
+
+/*
+@route  POST /api/products/:productId/variants
+@desc   Add a new variant to an existing product
+@access Private (Seller only)
+*/
+productRouter.post(
+  "/:productId/variants",
+  authenticateSeller,
+  upload.array("images", 7), //maximum ek product variant ki 7 images store kar sakte hai.
+  addProductVariant,
+);
 
 /*
 @route  GET /api/seller/products/:productId

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useProduct } from "../hook/useProduct";
 
@@ -103,32 +103,120 @@ const ProductDetail = () => {
   const { handleGetProductDetailsById } = useProduct();
   const [product, setProduct] = useState(null);
   const [activeImage, setActiveImage] = useState(0);
+  const [selectedAttributes, setSelectedAttributes] = useState({});
+
+  const normalize = (str) => str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+
+  const availableAttributes = useMemo(() => {
+    if (!product?.variants) return {};
+    const attrs = {};
+    product.variants.forEach(variant => {
+      Object.entries(variant.attributes || {}).forEach(([key, val]) => {
+        const nKey = normalize(key);
+        if (!attrs[nKey]) attrs[nKey] = new Set();
+        // keep the first casing encountered
+        const existing = Array.from(attrs[nKey]).find(e => String(e).toLowerCase() === String(val).toLowerCase());
+        if (!existing) {
+          attrs[nKey].add(val);
+        }
+      });
+    });
+    return Object.fromEntries(Object.entries(attrs).map(([k, v]) => [k, Array.from(v)]));
+  }, [product]);
+
+  useEffect(() => {
+    if (product?.variants?.length > 0 && Object.keys(selectedAttributes).length === 0) {
+      const firstVarAttrs = product.variants[0].attributes || {};
+      const initialSelection = {};
+      Object.entries(firstVarAttrs).forEach(([k, v]) => {
+        initialSelection[normalize(k)] = v;
+      });
+      setSelectedAttributes(initialSelection);
+    }
+  }, [product, selectedAttributes]);
+
+  const handleAttributeSelect = (key, value) => {
+    if (!product?.variants) return;
+    const mergedSelection = { ...selectedAttributes, [key]: value };
+    
+    let bestVariant = product.variants.find(v => {
+       return Object.entries(mergedSelection).every(([sk, sv]) => {
+         const ok = Object.keys(v.attributes || {}).find(vk => normalize(vk) === sk);
+         return ok && String(v.attributes[ok]).toLowerCase() === String(sv).toLowerCase();
+       });
+    });
+
+    if (!bestVariant) {
+      bestVariant = product.variants.find(v => {
+         const ok = Object.keys(v.attributes || {}).find(vk => normalize(vk) === key);
+         return ok && String(v.attributes[ok]).toLowerCase() === String(value).toLowerCase();
+       });
+    }
+
+    if (bestVariant) {
+      const newSelection = {};
+      Object.entries(bestVariant.attributes || {}).forEach(([k, v]) => {
+        newSelection[normalize(k)] = v;
+      });
+      setSelectedAttributes(newSelection);
+    }
+  };
+
+  const currentVariant = useMemo(() => {
+    if (!product?.variants?.length) return null;
+    return product.variants.find(v => {
+       const varKeys = Object.keys(v.attributes || {});
+       const selKeys = Object.keys(selectedAttributes);
+       if (varKeys.length !== selKeys.length) return false;
+       
+       return varKeys.every(vk => {
+         const nk = normalize(vk);
+         return String(v.attributes[vk]).toLowerCase() === String(selectedAttributes[nk]).toLowerCase();
+       });
+    }) || product.variants[0];
+  }, [product, selectedAttributes]);
+
+  useEffect(() => {
+    setActiveImage(0);
+  }, [currentVariant]);
+
+  const displayImages = currentVariant?.images?.length > 0 ? currentVariant.images : product?.images;
+  const displayPrice = currentVariant?.price?.amount ? currentVariant.price : product?.price;
+  const safeActiveImage = displayImages && activeImage < displayImages.length ? activeImage : 0;
 
   useEffect(() => {
     async function fetchProductDetails() {
-      const data = await handleGetProductDetailsById(productId);
-      setProduct(data);
+      try {
+        const data = await handleGetProductDetailsById(productId);
+        setProduct(data);
+      } catch (error) {
+        console.log("Error fetching products", error);
+      }
     }
     fetchProductDetails();
   }, [productId]);
 
+  console.log(product)
+
   const handlePrevImage = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    if (product?.images?.length) {
-      setActiveImage((prev) =>
-        prev === 0 ? product.images.length - 1 : prev - 1
-      );
+    if (displayImages?.length) {
+      setActiveImage((prev) => {
+        const current = prev < displayImages.length ? prev : 0;
+        return current === 0 ? displayImages.length - 1 : current - 1;
+      });
     }
   };
 
   const handleNextImage = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    if (product?.images?.length) {
-      setActiveImage((prev) =>
-        prev === product.images.length - 1 ? 0 : prev + 1
-      );
+    if (displayImages?.length) {
+      setActiveImage((prev) => {
+        const current = prev < displayImages.length ? prev : 0;
+        return current === displayImages.length - 1 ? 0 : current + 1;
+      });
     }
   };
 
@@ -173,7 +261,7 @@ const ProductDetail = () => {
                 <div className="h-10 w-3/4 bg-[#D4BFB0]/40 mb-6"></div>
                 {/* Price */}
                 <div className="h-8 w-1/4 bg-[#D4BFB0]/40 mb-8"></div>
-                
+
                 {/* Divider */}
                 <div className="w-12 h-px bg-[#D4BFB0] mb-8"></div>
 
@@ -205,7 +293,7 @@ const ProductDetail = () => {
               </div>
             </div>
           </main>
-          
+
           <footer className="border-t border-[#D4BFB0] bg-[#FAF7F2] py-12 mt-12 animate-pulse">
             <div className="max-w-[1600px] mx-auto px-6 md:px-12 flex flex-col md:flex-row justify-between items-center gap-6">
               <div className="h-6 w-32 bg-[#D4BFB0]/40"></div>
@@ -247,14 +335,14 @@ const ProductDetail = () => {
             {/* Left: Image Gallery */}
             <div className="w-full lg:w-[55%] flex flex-col md:flex-row gap-4 h-auto lg:h-[80vh]">
               {/* Thumbnails (Vertical on desktop, horizontal on mobile) */}
-              {product.images && product.images.length > 1 && (
+              {displayImages && displayImages.length > 1 && (
                 <div className="flex md:flex-col gap-4 overflow-auto md:w-[100px] shrink-0 no-scrollbar order-2 md:order-1">
-                  {product.images.map((img, idx) => (
+                  {displayImages.map((img, idx) => (
                     <button
                       key={img._id || idx}
                       onClick={() => setActiveImage(idx)}
                       className={`w-20 h-24 md:w-full md:h-[120px] shrink-0 border transition-all duration-300 ${
-                        activeImage === idx
+                        safeActiveImage === idx
                           ? "border-black"
                           : "border-[#D4BFB0] hover:border-black/50"
                       }`}
@@ -271,16 +359,16 @@ const ProductDetail = () => {
 
               {/* Main Image */}
               <div className="flex-1 bg-[#FAF7F2] border border-[#D4BFB0] overflow-hidden order-1 md:order-2 h-[60vh] md:h-full relative group">
-                {product.images && product.images.length > 0 ? (
+                {displayImages && displayImages.length > 0 ? (
                   <>
                     <img
-                      src={product.images[activeImage].url}
+                      src={displayImages[safeActiveImage]?.url}
                       alt={product.title}
                       className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
                     />
 
                     {/* Navigation Arrows */}
-                    {product.images.length > 1 && (
+                    {displayImages.length > 1 && (
                       <>
                         <button
                           onClick={handlePrevImage}
@@ -338,11 +426,42 @@ const ProductDetail = () => {
               </h1>
 
               <div className="text-xl md:text-2xl font-medium tracking-[0.1em] text-black uppercase mb-8">
-                {product.price?.currency}{" "}
-                {product.price?.amount?.toLocaleString()}
+                {displayPrice?.currency}{" "}
+                {displayPrice?.amount?.toLocaleString()}
               </div>
 
               <div className="w-12 h-px bg-[#D4BFB0] mb-8"></div>
+
+              {/* Attributes Selection */}
+              {Object.keys(availableAttributes).length > 0 && (
+                <div className="mb-8 space-y-6">
+                  {Object.entries(availableAttributes).map(([attrKey, values]) => (
+                    <div key={attrKey}>
+                      <h3 className="text-[10px] font-bold tracking-[0.15em] text-[#B89A82] uppercase mb-3">
+                        {attrKey}
+                      </h3>
+                      <div className="flex flex-wrap gap-3">
+                        {values.map((val, idx) => {
+                          const isSelected = String(selectedAttributes[attrKey]).toLowerCase() === String(val).toLowerCase();
+                          return (
+                            <button
+                              key={idx}
+                              onClick={() => handleAttributeSelect(attrKey, val)}
+                              className={`px-4 py-2 text-[11px] font-bold tracking-[0.1em] uppercase transition-all duration-300 border ${
+                                isSelected
+                                  ? "border-black bg-black text-white"
+                                  : "border-[#D4BFB0] bg-transparent text-black hover:border-black"
+                              }`}
+                            >
+                              {val}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
 
               <div className="prose prose-sm text-[#5A4F46] font-light leading-relaxed mb-12">
                 <p className="text-sm">{product.description}</p>

@@ -87,7 +87,8 @@ const Dashboard = () => {
                   No Products Found
                 </h3>
                 <p className="text-[11px] text-[#B89A82] mb-8 leading-relaxed">
-                  You haven't listed any products yet. Get started by creating your first product listing to reach your customers.
+                  You haven't listed any products yet. Get started by creating
+                  your first product listing to reach your customers.
                 </p>
                 <button
                   onClick={() => navigate("/seller/create-product")}
@@ -100,6 +101,9 @@ const Dashboard = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 xl:gap-8">
                 {sellerProducts.map((product) => (
                   <div
+                    onClick={() => {
+                      navigate(`/seller/product/${product._id}`);
+                    }}
                     key={product._id}
                     className="group bg-white border border-[#D4BFB0] flex flex-col transition-all duration-300 hover:border-black hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 cursor-pointer"
                   >
@@ -131,15 +135,18 @@ const Dashboard = () => {
                           </span>
                         </div>
                       )}
-                      
+
                       {/* Date Overlay */}
                       <div className="absolute top-0 left-0 p-3 w-full bg-gradient-to-b from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                         <p className="text-white text-[9px] tracking-widest uppercase font-medium drop-shadow-md">
-                          {new Date(product.createdAt).toLocaleDateString("en-US", {
-                            month: "short",
-                            day: "numeric",
-                            year: "numeric",
-                          })}
+                          {new Date(product.createdAt).toLocaleDateString(
+                            "en-US",
+                            {
+                              month: "short",
+                              day: "numeric",
+                              year: "numeric",
+                            },
+                          )}
                         </p>
                       </div>
                     </div>
@@ -156,12 +163,23 @@ const Dashboard = () => {
                       </div>
                       <div className="mt-4 pt-4 border-t border-[#F5EDE3] flex items-center justify-between group-hover:border-[#D4BFB0] transition-colors duration-300">
                         <span className="text-[10px] tracking-widest font-bold text-black uppercase">
-                          {product.price?.currency} {product.price?.amount?.toLocaleString()}
+                          {product.price?.currency}{" "}
+                          {product.price?.amount?.toLocaleString()}
                         </span>
-                        
+
                         <div className="w-6 h-6 rounded-full bg-[#FAF7F2] border border-[#D4BFB0] flex items-center justify-center text-black group-hover:bg-black group-hover:text-white group-hover:border-black transition-all duration-300 transform translate-x-2 opacity-0 group-hover:translate-x-0 group-hover:opacity-100">
-                          <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                          <svg
+                            className="w-3 h-3"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
+                            />
                           </svg>
                         </div>
                       </div>

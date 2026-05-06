@@ -24,3 +24,22 @@ export async function getProductDetailsById(productId) {
   const response = await productAPIInstance.get(`/details/${productId}`);
   return response.data;
 }
+
+export async function addProductVariant(productId, newProductVariant) {
+  const formData = new FormData();
+  
+
+  newProductVariant.images.forEach((image, index) => {
+    formData.append(`images`, image);
+  });
+  formData.append("stock", newProductVariant.stock);
+  formData.append("priceAmount", newProductVariant.price.amount);
+  formData.append("attributes", JSON.stringify(newProductVariant.attributes));
+
+  const response = await productAPIInstance.post(
+    `/${productId}/variants`,
+    formData,
+  );
+
+  return response.data;
+}
