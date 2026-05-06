@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useProduct } from "../hook/useProduct";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
@@ -163,13 +163,31 @@ const ProductCard = ({ product, onClickFn }) => (
   </div>
 );
 
+const ProductCardSkeleton = () => (
+  <div className="flex flex-col animate-pulse">
+    <div className="aspect-[3/4] bg-[#D4BFB0]/30 mb-5 border border-[#D4BFB0]/50"></div>
+    <div className="flex flex-col items-center text-center px-2">
+      <div className="h-3 w-3/4 bg-[#D4BFB0]/40 mb-3"></div>
+      <div className="h-2 w-full bg-[#D4BFB0]/30 mb-1"></div>
+      <div className="h-2 w-5/6 bg-[#D4BFB0]/30 mb-4"></div>
+      <div className="h-3 w-1/4 bg-[#D4BFB0]/40"></div>
+    </div>
+  </div>
+);
+
 const Home = () => {
   const { handleGetAllProducts } = useProduct();
   const products = useSelector((state) => state.product.products);
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    handleGetAllProducts();
+    async function fetchProducts() {
+      setIsLoading(true);
+      await handleGetAllProducts();
+      setIsLoading(false);
+    }
+    fetchProducts();
   }, []);
 
   return (
@@ -187,7 +205,13 @@ const Home = () => {
             <div className="w-12 h-[2px] bg-[#D4BFB0]"></div>
           </div>
 
-          {!products || products.length === 0 ? (
+          {isLoading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-8 gap-y-16">
+              {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
+                <ProductCardSkeleton key={n} />
+              ))}
+            </div>
+          ) : !products || products.length === 0 ? (
             <div className="text-center py-20 border border-[#D4BFB0] bg-[#FAF7F2] shadow-[4px_4px_0px_0px_rgba(212,191,176,0.3)] max-w-2xl mx-auto">
               <p className="text-[12px] tracking-[0.1em] uppercase font-medium text-[#B89A82]">
                 No products available right now.
