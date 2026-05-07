@@ -1,4 +1,4 @@
-import productModel from "../models/product.model";
+import productModel from "../models/product.model.js";
 
 export const stockOfVariantDao = async (productId, variantId) => {
   const product = await productModel.findOne({

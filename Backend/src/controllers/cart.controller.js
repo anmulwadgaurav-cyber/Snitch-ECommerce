@@ -15,14 +15,15 @@ export const addToCartController = async (req, res) => {
     return res.status(404).json({
       message: "Product not found",
       success: false,
+      Error,
     });
   }
 
   const stock = await stockOfVariantDao(productId, variantId);
 
   const cart =
-    (await cartModel.findOne({ user: user.req._id })) ||
-    (await cartModel.create({ user: user.req._id }));
+    (await cartModel.findOne({ user: req.user._id })) ||
+    (await cartModel.create({ user: req.user._id }));
 
   const isProductAlreadyInCart = cart.items.some(
     (item) =>
@@ -66,6 +67,19 @@ export const addToCartController = async (req, res) => {
       success: false,
     });
   }
+  cart.items.push({
+    product: productId,
+    variant: variantId,
+    quantity,
+    price: product.price,
+  });
+
+  await cart.save();
+
+  return res.status(200).json({
+    message: "Product added to cart successfully",
+    success: true,
+  });
 };
 
 export const getCartController = async (req, res) => {

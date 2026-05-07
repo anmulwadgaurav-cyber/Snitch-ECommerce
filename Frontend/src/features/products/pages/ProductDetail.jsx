@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useProduct } from "../hook/useProduct";
+import { useCart } from "../../cart/hook/useCart";
+import { current } from "@reduxjs/toolkit";
 
 const FontLink = () => (
   <link
@@ -101,31 +103,40 @@ const ProductDetail = () => {
   const { productId } = useParams();
   const navigate = useNavigate();
   const { handleGetProductDetailsById } = useProduct();
+  const { handleAddItem } = useCart();
   const [product, setProduct] = useState(null);
   const [activeImage, setActiveImage] = useState(0);
   const [selectedAttributes, setSelectedAttributes] = useState({});
 
-  const normalize = (str) => str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+  const normalize = (str) =>
+    str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 
   const availableAttributes = useMemo(() => {
     if (!product?.variants) return {};
     const attrs = {};
-    product.variants.forEach(variant => {
+    product.variants.forEach((variant) => {
       Object.entries(variant.attributes || {}).forEach(([key, val]) => {
         const nKey = normalize(key);
         if (!attrs[nKey]) attrs[nKey] = new Set();
         // keep the first casing encountered
-        const existing = Array.from(attrs[nKey]).find(e => String(e).toLowerCase() === String(val).toLowerCase());
+        const existing = Array.from(attrs[nKey]).find(
+          (e) => String(e).toLowerCase() === String(val).toLowerCase(),
+        );
         if (!existing) {
           attrs[nKey].add(val);
         }
       });
     });
-    return Object.fromEntries(Object.entries(attrs).map(([k, v]) => [k, Array.from(v)]));
+    return Object.fromEntries(
+      Object.entries(attrs).map(([k, v]) => [k, Array.from(v)]),
+    );
   }, [product]);
 
   useEffect(() => {
-    if (product?.variants?.length > 0 && Object.keys(selectedAttributes).length === 0) {
+    if (
+      product?.variants?.length > 0 &&
+      Object.keys(selectedAttributes).length === 0
+    ) {
       const firstVarAttrs = product.variants[0].attributes || {};
       const initialSelection = {};
       Object.entries(firstVarAttrs).forEach(([k, v]) => {
@@ -138,19 +149,29 @@ const ProductDetail = () => {
   const handleAttributeSelect = (key, value) => {
     if (!product?.variants) return;
     const mergedSelection = { ...selectedAttributes, [key]: value };
-    
-    let bestVariant = product.variants.find(v => {
-       return Object.entries(mergedSelection).every(([sk, sv]) => {
-         const ok = Object.keys(v.attributes || {}).find(vk => normalize(vk) === sk);
-         return ok && String(v.attributes[ok]).toLowerCase() === String(sv).toLowerCase();
-       });
+
+    let bestVariant = product.variants.find((v) => {
+      return Object.entries(mergedSelection).every(([sk, sv]) => {
+        const ok = Object.keys(v.attributes || {}).find(
+          (vk) => normalize(vk) === sk,
+        );
+        return (
+          ok &&
+          String(v.attributes[ok]).toLowerCase() === String(sv).toLowerCase()
+        );
+      });
     });
 
     if (!bestVariant) {
-      bestVariant = product.variants.find(v => {
-         const ok = Object.keys(v.attributes || {}).find(vk => normalize(vk) === key);
-         return ok && String(v.attributes[ok]).toLowerCase() === String(value).toLowerCase();
-       });
+      bestVariant = product.variants.find((v) => {
+        const ok = Object.keys(v.attributes || {}).find(
+          (vk) => normalize(vk) === key,
+        );
+        return (
+          ok &&
+          String(v.attributes[ok]).toLowerCase() === String(value).toLowerCase()
+        );
+      });
     }
 
     if (bestVariant) {
@@ -164,25 +185,36 @@ const ProductDetail = () => {
 
   const currentVariant = useMemo(() => {
     if (!product?.variants?.length) return null;
-    return product.variants.find(v => {
-       const varKeys = Object.keys(v.attributes || {});
-       const selKeys = Object.keys(selectedAttributes);
-       if (varKeys.length !== selKeys.length) return false;
-       
-       return varKeys.every(vk => {
-         const nk = normalize(vk);
-         return String(v.attributes[vk]).toLowerCase() === String(selectedAttributes[nk]).toLowerCase();
-       });
-    }) || product.variants[0];
+    return (
+      product.variants.find((v) => {
+        const varKeys = Object.keys(v.attributes || {});
+        const selKeys = Object.keys(selectedAttributes);
+        if (varKeys.length !== selKeys.length) return false;
+
+        return varKeys.every((vk) => {
+          const nk = normalize(vk);
+          return (
+            String(v.attributes[vk]).toLowerCase() ===
+            String(selectedAttributes[nk]).toLowerCase()
+          );
+        });
+      }) || product.variants[0]
+    );
   }, [product, selectedAttributes]);
 
   useEffect(() => {
     setActiveImage(0);
   }, [currentVariant]);
 
-  const displayImages = currentVariant?.images?.length > 0 ? currentVariant.images : product?.images;
-  const displayPrice = currentVariant?.price?.amount ? currentVariant.price : product?.price;
-  const safeActiveImage = displayImages && activeImage < displayImages.length ? activeImage : 0;
+  const displayImages =
+    currentVariant?.images?.length > 0
+      ? currentVariant.images
+      : product?.images;
+  const displayPrice = currentVariant?.price?.amount
+    ? currentVariant.price
+    : product?.price;
+  const safeActiveImage =
+    displayImages && activeImage < displayImages.length ? activeImage : 0;
 
   useEffect(() => {
     async function fetchProductDetails() {
@@ -195,8 +227,6 @@ const ProductDetail = () => {
     }
     fetchProductDetails();
   }, [productId]);
-
-  console.log(product)
 
   const handlePrevImage = (e) => {
     e.preventDefault();
@@ -435,31 +465,38 @@ const ProductDetail = () => {
               {/* Attributes Selection */}
               {Object.keys(availableAttributes).length > 0 && (
                 <div className="mb-8 space-y-6">
-                  {Object.entries(availableAttributes).map(([attrKey, values]) => (
-                    <div key={attrKey}>
-                      <h3 className="text-[10px] font-bold tracking-[0.15em] text-[#B89A82] uppercase mb-3">
-                        {attrKey}
-                      </h3>
-                      <div className="flex flex-wrap gap-3">
-                        {values.map((val, idx) => {
-                          const isSelected = String(selectedAttributes[attrKey]).toLowerCase() === String(val).toLowerCase();
-                          return (
-                            <button
-                              key={idx}
-                              onClick={() => handleAttributeSelect(attrKey, val)}
-                              className={`px-4 py-2 text-[11px] font-bold tracking-[0.1em] uppercase transition-all duration-300 border ${
-                                isSelected
-                                  ? "border-black bg-black text-white"
-                                  : "border-[#D4BFB0] bg-transparent text-black hover:border-black"
-                              }`}
-                            >
-                              {val}
-                            </button>
-                          );
-                        })}
+                  {Object.entries(availableAttributes).map(
+                    ([attrKey, values]) => (
+                      <div key={attrKey}>
+                        <h3 className="text-[10px] font-bold tracking-[0.15em] text-[#B89A82] uppercase mb-3">
+                          {attrKey}
+                        </h3>
+                        <div className="flex flex-wrap gap-3">
+                          {values.map((val, idx) => {
+                            const isSelected =
+                              String(
+                                selectedAttributes[attrKey],
+                              ).toLowerCase() === String(val).toLowerCase();
+                            return (
+                              <button
+                                key={idx}
+                                onClick={() =>
+                                  handleAttributeSelect(attrKey, val)
+                                }
+                                className={`px-4 py-2 text-[11px] font-bold tracking-[0.1em] uppercase transition-all duration-300 border ${
+                                  isSelected
+                                    ? "border-black bg-black text-white"
+                                    : "border-[#D4BFB0] bg-transparent text-black hover:border-black"
+                                }`}
+                              >
+                                {val}
+                              </button>
+                            );
+                          })}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ),
+                  )}
                 </div>
               )}
 
@@ -469,7 +506,16 @@ const ProductDetail = () => {
 
               {/* Action Buttons */}
               <div className="flex flex-col sm:flex-row gap-4 mt-auto">
-                <button className="flex-1 bg-transparent border border-black text-black px-8 py-5 text-[11px] font-bold tracking-[0.2em] uppercase hover:bg-black hover:text-white transition-all duration-300">
+                <button
+                  type="button"
+                  onClick={() => {
+                    handleAddItem({
+                      productId: productId,
+                      variantId: currentVariant._id,
+                    });
+                  }}
+                  className="flex-1 bg-transparent border border-black text-black px-8 py-5 text-[11px] font-bold tracking-[0.2em] uppercase hover:bg-black hover:text-white transition-all duration-300"
+                >
                   Add to Cart
                 </button>
                 <button className="flex-1 bg-black border border-black text-white px-8 py-5 text-[11px] font-bold tracking-[0.2em] uppercase hover:bg-[#B89A82] hover:border-[#B89A82] transition-all duration-300 shadow-[4px_4px_0px_0px_rgba(212,191,176,0.6)] hover:shadow-none hover:translate-y-1 hover:translate-x-1">
