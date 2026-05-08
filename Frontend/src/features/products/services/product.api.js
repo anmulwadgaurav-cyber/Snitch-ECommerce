@@ -33,7 +33,7 @@ export async function addProductVariant(productId, newProductVariant) {
     formData.append(`images`, image);
   });
   formData.append("stock", newProductVariant.stock);
-  formData.append("priceAmount", newProductVariant.price.amount);
+  formData.append("priceAmount", newProductVariant?.price?.amount);
   formData.append("attributes", JSON.stringify(newProductVariant.attributes));
 
   const response = await productAPIInstance.post(

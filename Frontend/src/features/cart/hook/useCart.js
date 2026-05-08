@@ -1,5 +1,17 @@
-import { addItem, getCart } from "../service/cart.api";
-import { addItem as addItemToCart } from "../state/cart.slice.js";
+import {
+  addItem,
+  decrementCartItemAPI,
+  getCart,
+  incrementCartItemAPI,
+  removeCartItemAPI,
+} from "../service/cart.api";
+import {
+  addItem as addItemToCart,
+  setItems,
+  incrementCartItem,
+  decrementCartItem,
+  removeCartItem,
+} from "../state/cart.slice.js";
 import { useDispatch } from "react-redux";
 
 export const useCart = () => {
@@ -7,13 +19,37 @@ export const useCart = () => {
 
   async function handleAddItem({ productId, variantId }) {
     const data = await addItem({ productId, variantId });
-    // dispatch(addItemToCart(data.item));
+    // Re-fetch full cart to sync Redux state (counter updates in real-time)
+    const cartData = await getCart();
+    dispatch(setItems(cartData.cart.items));
     return data;
   }
 
-  async function handleGetCart(){
-    const data = await 
+  async function handleGetCart() {
+    const data = await getCart();
+    dispatch(setItems(data.cart.items));
   }
 
-  return { handleAddItem };
+  async function handleIncrementCartItem({ productId, variantId }) {
+    const data = await incrementCartItemAPI({ productId, variantId });
+    dispatch(incrementCartItem({ productId, variantId }));
+  }
+
+  async function handleDecrementCartItem({ productId, variantId }) {
+    const data = await decrementCartItemAPI({ productId, variantId });
+    dispatch(decrementCartItem({ productId, variantId }));
+  }
+
+  async function handleRemoveCartItem({ productId, variantId }) {
+    const data = await removeCartItemAPI({ productId, variantId });
+    dispatch(removeCartItem({ productId, variantId }));
+  }
+
+  return {
+    handleAddItem,
+    handleGetCart,
+    handleIncrementCartItem,
+    handleDecrementCartItem,
+    handleRemoveCartItem,
+  };
 };

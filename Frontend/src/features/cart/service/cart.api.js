@@ -16,6 +16,27 @@ export const addItem = async ({ productId, variantId }) => {
 };
 
 export const getCart = async () => {
-  const response = await cartAPIInstance.get("/", { withCredentials: true });
+  const response = await cartAPIInstance.get("/");
+  return response.data;
+};
+
+export const incrementCartItemAPI = async ({ productId, variantId }) => {
+  const response = await cartAPIInstance.patch(
+    `/quantity/increment/${productId}/${variantId}`,
+  );
+  return response.data;
+};
+
+export const decrementCartItemAPI = async ({ productId, variantId }) => {
+  const response = await cartAPIInstance.patch(
+    `/quantity/decrement/${productId}/${variantId}`,
+  );
+  return response.data;
+};
+
+export const removeCartItemAPI = async ({ productId, variantId }) => {
+  const response = await cartAPIInstance.delete(
+    `/delete/${productId}/${variantId}`,
+  );
   return response.data;
 };
