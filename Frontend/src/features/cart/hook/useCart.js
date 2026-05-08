@@ -6,7 +6,6 @@ import {
   removeCartItemAPI,
 } from "../service/cart.api";
 import {
-  addItem as addItemToCart,
   setItems,
   incrementCartItem,
   decrementCartItem,
@@ -21,13 +20,13 @@ export const useCart = () => {
     const data = await addItem({ productId, variantId });
     // Re-fetch full cart to sync Redux state (counter updates in real-time)
     const cartData = await getCart();
-    dispatch(setItems(cartData.cart.items));
+    dispatch(setItems(cartData.cart));
     return data;
   }
 
   async function handleGetCart() {
     const data = await getCart();
-    dispatch(setItems(data.cart.items));
+    dispatch(setItems(data.cart));
   }
 
   async function handleIncrementCartItem({ productId, variantId }) {

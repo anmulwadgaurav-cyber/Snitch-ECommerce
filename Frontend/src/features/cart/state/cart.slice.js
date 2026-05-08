@@ -3,68 +3,46 @@ import { createSlice } from "@reduxjs/toolkit";
 const cartSlice = createSlice({
   name: "cart",
   initialState: {
-    items: [],
+    items: [], // shape: [{_id, items: [...], total, currency}]
   },
   reducers: {
     setItems: (state, action) => {
       state.items = action.payload;
     },
-    addItem: (state, action) => {
-      state.items.push(action.payload);
-    },
     incrementCartItem: (state, action) => {
       const { productId, variantId } = action.payload;
-      state.items = state.items.map((item) => {
+      if (!state.items[0]) return;
+      state.items[0].items = state.items[0].items.map((item) => {
         if (item.product._id === productId && item.variant === variantId) {
           return { ...item, quantity: item.quantity + 1 };
-        } else {
-          return item;
         }
+        return item;
       });
     },
     decrementCartItem: (state, action) => {
       const { productId, variantId } = action.payload;
-
-      state.items = state.items
+      if (!state.items[0]) return;
+      state.items[0].items = state.items[0].items
         .map((item) => {
-          const isMatchingItem =
-            item.product._id === productId && item.variant === variantId;
-
-          if (isMatchingItem) {
-            return {
-              ...item,
-              quantity: item.quantity - 1,
-            };
+          if (item.product._id === productId && item.variant === variantId) {
+            return { ...item, quantity: item.quantity - 1 };
           }
-
           return item;
         })
         .filter((item) => item.quantity > 0);
     },
     removeCartItem: (state, action) => {
       const { productId, variantId } = action.payload;
-
-      state.items = state.items
-        .map((item) => {
-          const isMatchingItem =
-            item.product._id === productId && item.variant === variantId;
-
-          if (isMatchingItem) {
-            return {
-              ...item,
-              quantity: item.quantity - 1,
-            };
-          }
-
-          return item;
-        })
-        .filter((item) => item.quantity > 0);
+      if (!state.items[0]) return;
+      state.items[0].items = state.items[0].items.filter(
+        (item) =>
+          !(item.product._id === productId && item.variant === variantId),
+      );
     },
   },
 });
 
 export const {
-  addItem,
   setItems,
   incrementCartItem,
   decrementCartItem,

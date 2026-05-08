@@ -5,8 +5,9 @@ import { useSelector } from "react-redux";
 import { useCart } from "../features/cart/hook/useCart";
 
 const AppLayout = () => {
-  const items = useSelector((state) => state.cart.items);
-  const count = items.reduce((total, item) => total + item.quantity, 0);
+  const cartData = useSelector((state) => state.cart.items); // [{_id, items:[...], total, currency}]
+  const cartItems = cartData[0]?.items || [];
+  const count = cartItems.reduce((total, item) => total + item.quantity, 0);
   const { handleGetCart } = useCart();
 
   useEffect(() => {

@@ -13,7 +13,7 @@ const FontLink = () => (
 const FONT = { fontFamily: "'Be Vietnam Pro', sans-serif" };
 
 const Cart = () => {
-  const cartItems = useSelector((state) => state.cart.items);
+  const cartItems = useSelector((state) => state.cart.items); // [{_id, items:[...], total, currency}]
   const {
     handleGetCart,
     handleIncrementCartItem,
@@ -25,12 +25,11 @@ const Cart = () => {
     handleGetCart();
   }, []);
 
-  const subtotal = cartItems.reduce(
-    (acc, item) => acc + (item.price?.amount || 0) * (item.quantity || 1),
-    0,
-  );
-  const shipping = subtotal > 0 ? 0 : 0; // Free shipping
-  const total = subtotal + shipping;
+  // Extract from the new nested structure
+  const cart = cartItems[0];
+  const items = cart?.items || [];
+  const total = cart?.total || 0;
+  const currency = cart?.currency || "INR";
 
   return (
     <>
@@ -44,7 +43,7 @@ const Cart = () => {
             Your Cart
           </h1>
 
-          {cartItems.length === 0 ? (
+          {items.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20">
               <p className="text-[12px] tracking-widest uppercase font-medium text-[#B89A82] mb-6">
                 Your cart is currently empty
@@ -60,12 +59,10 @@ const Cart = () => {
             <div className="flex flex-col lg:flex-row gap-12 xl:gap-24">
               {/* Cart Items List */}
               <div className="w-full lg:w-[65%] flex flex-col">
-                {cartItems.map((item) => {
+                {items.map((item) => {
                   const product = item.product;
-                  // Find the matched variant to show its specific image/attributes if available
-                  const variant = product?.variants?.find(
-                    (v) => v._id === item.variant,
-                  );
+                  // In the new format, product.variants is the already-matched single variant object
+                  const variant = product?.variants;
                   const displayImage =
                     variant?.images?.[0]?.url || product?.images?.[0]?.url;
                   const attributes = variant?.attributes || {};
@@ -102,12 +99,12 @@ const Cart = () => {
                           </div>
                           {/* Remove Button */}
                           <button
-                            onClick={() => {
+                            onClick={() =>
                               handleRemoveCartItem({
-                                productId: item.product._id,
+                                productId: product._id,
                                 variantId: item.variant,
-                              });
-                            }}
+                              })
+                            }
                             className="text-[#B89A82] hover:text-black transition-colors p-2 -mr-2"
                           >
                             <svg
@@ -145,7 +142,7 @@ const Cart = () => {
                             <button
                               onClick={() =>
                                 handleDecrementCartItem({
-                                  productId: item.product._id,
+                                  productId: product._id,
                                   variantId: item.variant,
                                 })
                               }
@@ -159,7 +156,7 @@ const Cart = () => {
                             <button
                               onClick={() =>
                                 handleIncrementCartItem({
-                                  productId: item.product._id,
+                                  productId: product._id,
                                   variantId: item.variant,
                                 })
                               }
@@ -182,7 +179,7 @@ const Cart = () => {
                 })}
               </div>
 
-              {/* Order Summary */}
+              {/* Order Summary — uses server-computed total */}
               <div className="w-full lg:w-[35%]">
                 <div className="bg-[#FAF7F2] border border-[#D4BFB0] p-8 md:p-10 sticky top-32">
                   <h3 className="text-xl font-medium tracking-[0.1em] text-black uppercase mb-8 pb-4 border-b border-[#D4BFB0]">
@@ -192,21 +189,17 @@ const Cart = () => {
                   <div className="space-y-4 mb-8">
                     <div className="flex justify-between items-center text-[12px] tracking-[0.1em] uppercase text-[#5A4F46]">
                       <span>Subtotal</span>
-                      <span>INR {subtotal.toLocaleString()}</span>
+                      <span>{currency} {total.toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between items-center text-[12px] tracking-[0.1em] uppercase text-[#5A4F46]">
                       <span>Shipping</span>
-                      <span>
-                        {shipping === 0
-                          ? "Complimentary"
-                          : `INR ${shipping.toLocaleString()}`}
-                      </span>
+                      <span>Complimentary</span>
                     </div>
                   </div>
 
                   <div className="flex justify-between items-center text-lg font-medium tracking-[0.1em] uppercase text-black mb-10 pt-6 border-t border-[#D4BFB0]">
                     <span>Total</span>
-                    <span>INR {total.toLocaleString()}</span>
+                    <span>{currency} {total.toLocaleString()}</span>
                   </div>
 
                   <button className="w-full bg-black border border-black text-white px-8 py-5 text-[11px] font-bold tracking-[0.2em] uppercase hover:bg-[#B89A82] hover:border-[#B89A82] transition-all duration-300 shadow-[4px_4px_0px_0px_rgba(212,191,176,0.6)] hover:shadow-none hover:translate-y-1 hover:translate-x-1">
