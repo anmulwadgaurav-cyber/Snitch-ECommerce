@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useCart } from "../hook/useCart";
 import { Link } from "react-router-dom";
+import { useRazorpay } from "react-razorpay";
 
 const FontLink = () => (
   <link
@@ -19,11 +20,43 @@ const Cart = () => {
     handleIncrementCartItem,
     handleDecrementCartItem,
     handleRemoveCartItem,
+    handleCreateCartOrder,
   } = useCart();
+  const { error, isLoading, Razorpay } = useRazorpay();
+  const user = useSelector((state) => state.user);
 
   useEffect(() => {
     handleGetCart();
   }, []);
+
+  async function handleCheckout() {
+    const order = await handleCreateCartOrder();
+    console.log(order);
+
+    const options = {
+      key: "rzp_test_Sna52iFEdmX2mW", //no problem if it is go as it is on frontend
+      amount: order.amount, // Amount in paise
+      currency: order.currency,
+      name: "ORCERAL",
+      description: "Test Transaction",
+      order_id: order.id, // Generate order_id on server
+      handler: (response) => {
+        console.log(response);
+        alert("Payment Successful!");
+      },
+      prefill: {
+        name: user?.fullname,
+        email: user?.email,
+        contact: user?.contact,
+      },
+      theme: {
+        color: "#F5EDE3",
+      },
+    };
+
+    const razorpayInstance = new Razorpay(options);
+    razorpayInstance.open();
+  }
 
   // Extract from the new nested structure
   const cart = cartItems[0];
@@ -189,7 +222,9 @@ const Cart = () => {
                   <div className="space-y-4 mb-8">
                     <div className="flex justify-between items-center text-[12px] tracking-[0.1em] uppercase text-[#5A4F46]">
                       <span>Subtotal</span>
-                      <span>{currency} {total.toLocaleString()}</span>
+                      <span>
+                        {currency} {total.toLocaleString()}
+                      </span>
                     </div>
                     <div className="flex justify-between items-center text-[12px] tracking-[0.1em] uppercase text-[#5A4F46]">
                       <span>Shipping</span>
@@ -199,10 +234,15 @@ const Cart = () => {
 
                   <div className="flex justify-between items-center text-lg font-medium tracking-[0.1em] uppercase text-black mb-10 pt-6 border-t border-[#D4BFB0]">
                     <span>Total</span>
-                    <span>{currency} {total.toLocaleString()}</span>
+                    <span>
+                      {currency} {total.toLocaleString()}
+                    </span>
                   </div>
 
-                  <button className="w-full bg-black border border-black text-white px-8 py-5 text-[11px] font-bold tracking-[0.2em] uppercase hover:bg-[#B89A82] hover:border-[#B89A82] transition-all duration-300 shadow-[4px_4px_0px_0px_rgba(212,191,176,0.6)] hover:shadow-none hover:translate-y-1 hover:translate-x-1">
+                  <button
+                    onClick={handleCheckout}
+                    className="w-full bg-black border border-black text-white px-8 py-5 text-[11px] font-bold tracking-[0.2em] uppercase hover:bg-[#B89A82] hover:border-[#B89A82] transition-all duration-300 shadow-[4px_4px_0px_0px_rgba(212,191,176,0.6)] hover:shadow-none hover:translate-y-1 hover:translate-x-1"
+                  >
                     Proceed to Checkout
                   </button>
                 </div>

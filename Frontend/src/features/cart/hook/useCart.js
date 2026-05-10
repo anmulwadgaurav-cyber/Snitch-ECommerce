@@ -4,6 +4,7 @@ import {
   getCart,
   incrementCartItemAPI,
   removeCartItemAPI,
+  createCartOrder,
 } from "../service/cart.api";
 import {
   setItems,
@@ -44,11 +45,17 @@ export const useCart = () => {
     dispatch(removeCartItem({ productId, variantId }));
   }
 
+  async function handleCreateCartOrder() {
+    const data = await createCartOrder();
+    return data.order;
+  }
+
   return {
     handleAddItem,
     handleGetCart,
     handleIncrementCartItem,
     handleDecrementCartItem,
     handleRemoveCartItem,
+    handleCreateCartOrder,
   };
 };

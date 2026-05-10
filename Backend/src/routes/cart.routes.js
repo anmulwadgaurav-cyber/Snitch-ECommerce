@@ -7,6 +7,7 @@ import {
 } from "../validators/cart.validator.js";
 import {
   addToCartController,
+  createOrderController,
   decrementCartItemQuantityController,
   getCartController,
   incrementCartItemQuantityController,
@@ -81,6 +82,16 @@ cartRouter.delete(
   authenticateUser,
   validateRemoveCartItemQuantity,
   removeCartItemController,
+);
+
+/*
+@route POST /api/cart/payment/create/order
+*/
+
+cartRouter.post(
+  "/payment/create/order",
+  authenticateUser,
+  createOrderController,
 );
 
 export default cartRouter;
