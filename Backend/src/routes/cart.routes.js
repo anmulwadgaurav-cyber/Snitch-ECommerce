@@ -12,6 +12,7 @@ import {
   getCartController,
   incrementCartItemQuantityController,
   removeCartItemController,
+  verifyOrderController,
 } from "../controllers/cart.controller.js";
 const cartRouter = express.Router();
 
@@ -92,6 +93,12 @@ cartRouter.post(
   "/payment/create/order",
   authenticateUser,
   createOrderController,
+);
+
+cartRouter.post(
+  "/payment/verify/order",
+  authenticateUser,
+  verifyOrderController,
 );
 
 export default cartRouter;

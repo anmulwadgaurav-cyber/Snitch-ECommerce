@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import { useCart } from "../hook/useCart";
 import { Link } from "react-router-dom";
 import { useRazorpay } from "react-razorpay";
+import { useNavigate } from "react-router-dom";
 
 const FontLink = () => (
   <link
@@ -21,9 +22,12 @@ const Cart = () => {
     handleDecrementCartItem,
     handleRemoveCartItem,
     handleCreateCartOrder,
+    handleVerifyCartOrder,
   } = useCart();
   const { error, isLoading, Razorpay } = useRazorpay();
   const user = useSelector((state) => state.user);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     handleGetCart();
@@ -31,7 +35,6 @@ const Cart = () => {
 
   async function handleCheckout() {
     const order = await handleCreateCartOrder();
-    console.log(order);
 
     const options = {
       key: "rzp_test_Sna52iFEdmX2mW", //no problem if it is go as it is on frontend
@@ -40,9 +43,11 @@ const Cart = () => {
       name: "ORCERAL",
       description: "Test Transaction",
       order_id: order.id, // Generate order_id on server
-      handler: (response) => {
-        console.log(response);
-        alert("Payment Successful!");
+      handler: async (response) => {
+        const isValid = await handleVerifyCartOrder(response);
+        if (isValid) {
+          navigate(`/order-success?order_id=${response?.razorpay_order_id}`);
+        }
       },
       prefill: {
         name: user?.fullname,

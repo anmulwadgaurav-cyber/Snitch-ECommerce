@@ -5,6 +5,7 @@ import {
   incrementCartItemAPI,
   removeCartItemAPI,
   createCartOrder,
+  verifyCartOrder,
 } from "../service/cart.api";
 import {
   setItems,
@@ -50,6 +51,19 @@ export const useCart = () => {
     return data.order;
   }
 
+  async function handleVerifyCartOrder({
+    razorpay_order_id,
+    razorpay_payment_id,
+    razorpay_signature,
+  }) {
+    const data = await verifyCartOrder({
+      razorpay_order_id,
+      razorpay_payment_id,
+      razorpay_signature,
+    });
+    return data.success;
+  }
+
   return {
     handleAddItem,
     handleGetCart,
@@ -57,5 +71,6 @@ export const useCart = () => {
     handleDecrementCartItem,
     handleRemoveCartItem,
     handleCreateCartOrder,
+    handleVerifyCartOrder,
   };
 };

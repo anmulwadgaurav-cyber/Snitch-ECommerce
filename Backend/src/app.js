@@ -8,16 +8,22 @@ import { config } from "./config/config.js";
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import cartRouter from "./routes/cart.routes.js";
+import helmet from "helmet";
 
 const app = express();
 
+app.use(
+  helmet({
+    contentSecurityPolicy: false, // Disables CSP
+    xDownloadOptions: false, // Disables X-Download-Options
+  }),
+); // always put it on top
 app.use(
   cors({
     origin: "http://localhost:5173",
     credentials: true,
   }),
 );
-
 app.use(passport.initialize());
 
 // trust proxy when behind a reverse proxy (useful when deployed)
